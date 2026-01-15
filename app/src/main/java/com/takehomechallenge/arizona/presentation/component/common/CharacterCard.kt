@@ -93,7 +93,9 @@ fun CharacterCard(
                     Text(
                         text = "${character.status.value} - ${character.species}",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        color = TextGray
+                        color = TextGray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }

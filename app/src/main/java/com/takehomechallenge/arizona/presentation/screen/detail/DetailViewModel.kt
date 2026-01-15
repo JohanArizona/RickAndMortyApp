@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.takehomechallenge.arizona.domain.model.Character
 import com.takehomechallenge.arizona.domain.state.ResourceState
 import com.takehomechallenge.arizona.domain.usecase.character.GetCharacterDetailUseCase
+import com.takehomechallenge.arizona.domain.usecase.character.GetCharactersUseCase
 import com.takehomechallenge.arizona.domain.usecase.favorite.AddFavoriteUseCase
 import com.takehomechallenge.arizona.domain.usecase.favorite.CheckFavoriteUseCase
 import com.takehomechallenge.arizona.domain.usecase.favorite.RemoveFavoriteUseCase
@@ -18,10 +19,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val getCharacterDetailUseCase: GetCharacterDetailUseCase,
+    private val getCharactersUseCase: GetCharactersUseCase,
     private val addFavoriteUseCase: AddFavoriteUseCase,
     private val removeFavoriteUseCase: RemoveFavoriteUseCase,
     private val checkFavoriteUseCase: CheckFavoriteUseCase
@@ -31,18 +34,28 @@ class DetailViewModel @Inject constructor(
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
     fun getCharacterDetail(id: Int) {
-        // Cek status favorite dulu
         checkFavoriteUseCase(id).onEach { isFav ->
             _uiState.update { it.copy(isFavorite = isFav) }
         }.launchIn(viewModelScope)
 
-        // Ambil detail
         getCharacterDetailUseCase(id).onEach { result ->
             when (result) {
                 is ResourceState.Loading -> _uiState.update { it.copy(isLoading = true) }
-                is ResourceState.Success -> _uiState.update { it.copy(isLoading = false, character = result.data) }
+                is ResourceState.Success -> {
+                    _uiState.update { it.copy(isLoading = false, character = result.data) }
+                    loadRecommendations()
+                }
                 is ResourceState.Error -> _uiState.update { it.copy(isLoading = false, error = result.message) }
                 else -> Unit
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun loadRecommendations() {
+        val randomPage = Random.nextInt(1, 42)
+        getCharactersUseCase(randomPage).onEach { result ->
+            if (result is ResourceState.Success) {
+                _uiState.update { it.copy(recommendations = result.data) }
             }
         }.launchIn(viewModelScope)
     }
