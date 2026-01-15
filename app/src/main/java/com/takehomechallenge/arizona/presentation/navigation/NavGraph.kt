@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.takehomechallenge.arizona.presentation.screen.detail.DetailScreen
+import com.takehomechallenge.arizona.presentation.screen.favorite.FavoriteScreen
 import com.takehomechallenge.arizona.presentation.screen.home.HomeScreen
 import com.takehomechallenge.arizona.presentation.screen.search.SearchScreen
 
@@ -25,8 +26,8 @@ fun NavGraph(
             HomeScreen(navController = navController)
         }
 
-        composable(Screen.Search.route) {
-            // TO DO
+        composable(Screen.Favorite.route) {
+            FavoriteScreen(navController = navController)
         }
 
         composable(

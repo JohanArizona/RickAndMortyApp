@@ -2,8 +2,12 @@ package com.takehomechallenge.arizona.presentation.screen.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.takehomechallenge.arizona.domain.model.Character
 import com.takehomechallenge.arizona.domain.state.ResourceState
 import com.takehomechallenge.arizona.domain.usecase.character.SearchCharactersUseCase
+import com.takehomechallenge.arizona.domain.usecase.favorite.AddFavoriteUseCase
+import com.takehomechallenge.arizona.domain.usecase.favorite.GetFavoritesUseCase
+import com.takehomechallenge.arizona.domain.usecase.favorite.RemoveFavoriteUseCase
 import com.takehomechallenge.arizona.presentation.screen.search.state.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -19,16 +23,34 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val useCase: SearchCharactersUseCase
+    private val useCase: SearchCharactersUseCase,
+    private val getFavoritesUseCase: GetFavoritesUseCase,
+    private val addFavoriteUseCase: AddFavoriteUseCase,
+    private val removeFavoriteUseCase: RemoveFavoriteUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
+    private var favoriteIds = setOf<Int>()
 
     init {
         loadHistory()
+        observeFavorites()
+    }
+
+    private fun observeFavorites() {
+        getFavoritesUseCase().onEach { favorites ->
+            favoriteIds = favorites.map { it.id }.toSet()
+            val currentList = _uiState.value.characters
+            if (currentList.isNotEmpty()) {
+                val updatedList = currentList.map { char ->
+                    char.copy(isFavorite = favoriteIds.contains(char.id))
+                }
+                _uiState.update { it.copy(characters = updatedList) }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun loadHistory() {
@@ -37,60 +59,11 @@ class SearchViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun onQueryChange(newQuery: String) {
-        _uiState.update { it.copy(query = newQuery) }
-
-        searchJob?.cancel()
-
-        if (newQuery.isBlank()) {
-
-            _uiState.update { it.copy(characters = emptyList(), isEmpty = false, isLoading = false, error = null) }
-            return
-        }
-
-        searchJob = viewModelScope.launch {
-            delay(500)
-            executeSearch()
-        }
-    }
-
-    fun applyFilter(status: String?, gender: String?, species: String, type: String) {
-        _uiState.update {
-            it.copy(
-                filterStatus = status,
-                filterGender = gender,
-                filterSpecies = species,
-                filterType = type
-            )
-        }
-
-        if (_uiState.value.query.isNotBlank()) {
-            executeSearch()
-        }
-    }
-
-    fun clearFilter() {
-        _uiState.update {
-            it.copy(filterStatus = null, filterGender = null, filterSpecies = "", filterType = "")
-        }
-        if (_uiState.value.query.isNotBlank()) executeSearch()
-    }
-
-    fun deleteHistory(query: String) {
-        viewModelScope.launch { useCase.removeFromHistory(query) }
-    }
-
-    fun onHistoryClicked(query: String) {
-        onQueryChange(query)
-    }
-
     private fun executeSearch() {
         val state = _uiState.value
         if (state.query.isBlank()) return
 
-        viewModelScope.launch {
-            useCase.addToHistory(state.query)
-        }
+        viewModelScope.launch { useCase.addToHistory(state.query) }
 
         useCase(
             name = state.query,
@@ -101,10 +74,49 @@ class SearchViewModel @Inject constructor(
         ).onEach { result ->
             when (result) {
                 is ResourceState.Loading -> _uiState.update { it.copy(isLoading = true, error = null, isEmpty = false) }
-                is ResourceState.Success -> _uiState.update { it.copy(isLoading = false, characters = result.data, isEmpty = false) }
+                is ResourceState.Success -> {
+                    val mappedData = result.data.map { char ->
+                        char.copy(isFavorite = favoriteIds.contains(char.id))
+                    }
+                    _uiState.update { it.copy(isLoading = false, characters = mappedData, isEmpty = false) }
+                }
                 is ResourceState.Empty -> _uiState.update { it.copy(isLoading = false, characters = emptyList(), isEmpty = true) }
                 is ResourceState.Error -> _uiState.update { it.copy(isLoading = false, error = result.message) }
             }
         }.launchIn(viewModelScope)
     }
+
+    fun toggleFavorite(character: Character) {
+        viewModelScope.launch {
+            if (favoriteIds.contains(character.id)) {
+                removeFavoriteUseCase(character.id)
+            } else {
+                addFavoriteUseCase(character.copy(isFavorite = true))
+            }
+        }
+    }
+
+    fun onQueryChange(newQuery: String) {
+        _uiState.update { it.copy(query = newQuery) }
+        searchJob?.cancel()
+        if (newQuery.isBlank()) {
+            _uiState.update { it.copy(characters = emptyList(), isEmpty = false, isLoading = false, error = null) }
+            return
+        }
+        searchJob = viewModelScope.launch {
+            delay(500)
+            executeSearch()
+        }
+    }
+
+    fun applyFilter(status: String?, gender: String?, species: String, type: String) {
+        _uiState.update { it.copy(filterStatus = status, filterGender = gender, filterSpecies = species, filterType = type) }
+        if (_uiState.value.query.isNotBlank()) executeSearch()
+    }
+    fun clearFilter() {
+        _uiState.update { it.copy(filterStatus = null, filterGender = null, filterSpecies = "", filterType = "") }
+        if (_uiState.value.query.isNotBlank()) executeSearch()
+    }
+    fun deleteHistory(query: String) { viewModelScope.launch { useCase.removeFromHistory(query) } }
+    fun onHistoryClicked(query: String) { onQueryChange(query) }
 }

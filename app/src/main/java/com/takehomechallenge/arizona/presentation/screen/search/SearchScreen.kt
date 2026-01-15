@@ -216,6 +216,10 @@ fun SearchScreen(
                         items(state.characters) { character ->
                             CharacterCard(
                                 character = character,
+                                isFavorite = character.isFavorite,
+                                onFavoriteClick = {
+                                    viewModel.toggleFavorite(character)
+                                },
                                 onClick = { navController.navigate(Screen.Detail.createRoute(character.id)) }
                             )
                         }

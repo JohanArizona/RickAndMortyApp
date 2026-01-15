@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -101,6 +102,10 @@ fun HomeScreen(
 
                 CharacterCard(
                     character = character,
+                    isFavorite = character.isFavorite,
+                    onFavoriteClick = {
+                        viewModel.toggleFavorite(character)
+                    },
                     onClick = { navController.navigate(Screen.Detail.createRoute(character.id)) }
                 )
             }
