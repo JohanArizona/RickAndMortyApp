@@ -25,20 +25,27 @@ class HomeViewModel @Inject constructor(
     init {
         loadCharacters()
     }
+    fun loadNextPage() {
+        if (!_uiState.value.isLoading) {
+            loadCharacters()
+        }
+    }
 
-    fun loadCharacters() {
+    private fun loadCharacters() {
         val currentPage = _uiState.value.page
+
         getCharactersUseCase(currentPage).onEach { result ->
             when (result) {
                 is ResourceState.Loading -> {
                     _uiState.update { it.copy(isLoading = true, error = null) }
                 }
                 is ResourceState.Success -> {
-                    _uiState.update {
-                        it.copy(
+                    _uiState.update { currentState ->
+                        currentState.copy(
                             isLoading = false,
-                            characters = result.data,
-                            error = null
+                            characters = currentState.characters + result.data,
+                            error = null,
+                            page = currentState.page + 1
                         )
                     }
                 }
@@ -46,7 +53,7 @@ class HomeViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
                 is ResourceState.Empty -> {
-                    _uiState.update { it.copy(isLoading = false, characters = emptyList()) }
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             }
         }.launchIn(viewModelScope)
