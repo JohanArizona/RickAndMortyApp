@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.takehomechallenge.arizona.data.local.dao.CharacterDao
 import com.takehomechallenge.arizona.data.local.dao.FavoriteDao
+import com.takehomechallenge.arizona.data.local.dao.SearchHistoryDao
 import com.takehomechallenge.arizona.data.local.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -36,5 +37,11 @@ object DatabaseModule {
     @Singleton
     fun provideFavoriteDao(database: AppDatabase): FavoriteDao {
         return database.favoriteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchHistoryDao(database: AppDatabase): SearchHistoryDao {
+        return database.searchHistoryDao()
     }
 }

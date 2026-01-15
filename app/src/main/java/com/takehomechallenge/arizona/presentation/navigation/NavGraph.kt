@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.takehomechallenge.arizona.presentation.screen.detail.DetailScreen
 import com.takehomechallenge.arizona.presentation.screen.home.HomeScreen
+import com.takehomechallenge.arizona.presentation.screen.search.SearchScreen
 
 @Composable
 fun NavGraph(
@@ -36,8 +37,8 @@ fun NavGraph(
             DetailScreen(characterId = characterId, navController = navController)
         }
 
-        composable(Screen.Favorite.route) {
-            // TO DO
+        composable(Screen.Search.route) {
+            SearchScreen(navController = navController)
         }
     }
 }

@@ -2,8 +2,10 @@ package com.takehomechallenge.arizona.di
 
 import com.takehomechallenge.arizona.data.repository.CharacterRepositoryImpl
 import com.takehomechallenge.arizona.data.repository.FavoriteRepositoryImpl
+import com.takehomechallenge.arizona.data.repository.SearchRepositoryImpl
 import com.takehomechallenge.arizona.domain.repository.CharacterRepository
 import com.takehomechallenge.arizona.domain.repository.FavoriteRepository
+import com.takehomechallenge.arizona.domain.repository.SearchRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,4 +27,10 @@ abstract class RepositoryModule {
     abstract fun bindFavoriteRepository(
         favoriteRepositoryImpl: FavoriteRepositoryImpl
     ): FavoriteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSearchRepository(
+        searchRepositoryImpl: SearchRepositoryImpl
+    ): SearchRepository
 }

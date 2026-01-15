@@ -71,7 +71,15 @@ class CharacterRepositoryImpl @Inject constructor(
     override fun searchCharacters(query: String, page: Int): Flow<ResourceState<List<Character>>> = flow {
         emit(ResourceState.Loading)
         try {
-            val response = api.searchCharacters(query, page)
+            val response = api.searchCharacters(
+                name = query,
+                status = null,
+                species = null,
+                type = null,
+                gender = null,
+                page = page
+            )
+
             if (response.results.isEmpty()) {
                 emit(ResourceState.Empty)
             } else {
