@@ -2,6 +2,7 @@ package com.takehomechallenge.arizona.presentation.screen.home
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,8 +37,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -43,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +55,7 @@ import com.takehomechallenge.arizona.presentation.component.common.CharacterCard
 import com.takehomechallenge.arizona.presentation.navigation.Screen
 import com.takehomechallenge.arizona.presentation.theme.BackgroundDark
 import com.takehomechallenge.arizona.presentation.theme.RickGreen
+import com.takehomechallenge.arizona.presentation.theme.TextGray
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -72,11 +75,12 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
+
             item(span = { GridItemSpan(2) }) {
                 HeroHeader()
             }
 
-            stickyHeader{
+            stickyHeader {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -93,37 +97,72 @@ fun HomeScreen(
                 }
             }
 
-            items(state.characters.size) { index ->
-                val character = state.characters[index]
-
-                if (index >= state.characters.size - 1 && !state.isLoading) {
-                    viewModel.loadNextPage()
+            if (state.isLoading && state.characters.isEmpty()) {
+                item(span = { GridItemSpan(2) }) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = RickGreen
+                        )
+                    }
                 }
-
-                CharacterCard(
-                    character = character,
-                    isFavorite = character.isFavorite,
-                    onFavoriteClick = {
-                        viewModel.toggleFavorite(character)
-                    },
-                    onClick = { navController.navigate(Screen.Detail.createRoute(character.id)) }
-                )
             }
-        }
 
-        if (state.isLoading && state.characters.isEmpty()) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = RickGreen
-            )
-        }
+            else if (state.error != null && state.characters.isEmpty()) {
+                item(span = { GridItemSpan(2) }) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 40.dp, bottom = 40.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = "Error",
+                            tint = Color.Red,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = state.error ?: "Unknown Error",
+                            color = Color.Red,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.loadNextPage() },
+                            colors = ButtonDefaults.buttonColors(containerColor = RickGreen)
+                        ) {
+                            Text("Retry", color = BackgroundDark)
+                        }
+                    }
+                }
+            }
 
-        if (state.error != null && state.characters.isEmpty()) {
-            Text(
-                text = state.error ?: "Error",
-                color = Color.Red,
-                modifier = Modifier.align(Alignment.Center)
-            )
+            else {
+                items(state.characters.size) { index ->
+                    val character = state.characters[index]
+
+                    if (index >= state.characters.size - 1 && !state.isLoading) {
+                        viewModel.loadNextPage()
+                    }
+
+                    CharacterCard(
+                        character = character,
+                        isFavorite = character.isFavorite,
+                        onFavoriteClick = {
+                            viewModel.toggleFavorite(character)
+                        },
+                        onClick = { navController.navigate(Screen.Detail.createRoute(character.id)) }
+                    )
+                }
+            }
         }
     }
 }

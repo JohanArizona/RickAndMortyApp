@@ -81,7 +81,7 @@ fun FavoriteScreen(
                         )
                         Text(
                             text = "Mark characters to see them here",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = TextGray.copy(alpha = 0.7f)
                         )
                     }
