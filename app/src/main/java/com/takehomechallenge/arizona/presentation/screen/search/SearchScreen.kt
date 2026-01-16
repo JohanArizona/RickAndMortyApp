@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -268,7 +267,14 @@ fun FilterBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = SurfaceDark,
-        scrimColor = Color.Black.copy(alpha = 0.5f)
+        scrimColor = Color.Black.copy(alpha = 0.5f),
+        dragHandle = {
+            androidx.compose.material3.BottomSheetDefaults.DragHandle(
+                width = 80.dp,
+                height = 6.dp,
+                color = TextGray
+            )
+        }
     ) {
         Column(
             modifier = Modifier

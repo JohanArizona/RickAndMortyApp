@@ -2,7 +2,19 @@ package com.takehomechallenge.arizona.presentation.screen.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -12,9 +24,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,7 +52,13 @@ import coil.compose.AsyncImage
 import com.takehomechallenge.arizona.R
 import com.takehomechallenge.arizona.presentation.component.common.CharacterCard
 import com.takehomechallenge.arizona.presentation.navigation.Screen
-import com.takehomechallenge.arizona.presentation.theme.*
+import com.takehomechallenge.arizona.presentation.theme.BackgroundDark
+import com.takehomechallenge.arizona.presentation.theme.RickGreen
+import com.takehomechallenge.arizona.presentation.theme.StatusGray
+import com.takehomechallenge.arizona.presentation.theme.StatusGreen
+import com.takehomechallenge.arizona.presentation.theme.StatusRed
+import com.takehomechallenge.arizona.presentation.theme.SurfaceDark
+import com.takehomechallenge.arizona.presentation.theme.TextGray
 
 @Composable
 fun DetailScreen(
@@ -87,17 +109,6 @@ fun DetailScreen(
                                     )
                                 )
                         )
-
-                        IconButton(
-                            onClick = { navController.popBackStack() },
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .align(Alignment.TopStart)
-                                .clip(CircleShape)
-                                .background(Color.Black.copy(alpha = 0.5f))
-                        ) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                        }
                     }
                 }
 
@@ -125,16 +136,21 @@ fun DetailScreen(
                                         StatusBadgeLarge(status = character.status.value, species = character.species)
                                     }
 
-                                    FloatingActionButton(
+                                    IconButton(
                                         onClick = { viewModel.toggleFavorite(character) },
-                                        containerColor = RickGreen,
-                                        contentColor = BackgroundDark,
-                                        shape = CircleShape,
-                                        modifier = Modifier.size(56.dp)
+                                        modifier = Modifier
+                                            .size(56.dp)
+                                            .clip(CircleShape)
+                                            .background(Color.Black.copy(alpha = 0.6f))
                                     ) {
                                         Icon(
-                                            imageVector = if (state.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                            contentDescription = "Favorite"
+                                            imageVector = if (state.isFavorite)
+                                                Icons.Default.Favorite
+                                            else
+                                                Icons.Default.FavoriteBorder,
+                                            contentDescription = "Favorite",
+                                            tint = RickGreen,
+                                            modifier = Modifier.size(32.dp)
                                         )
                                     }
                                 }
@@ -262,6 +278,17 @@ fun DetailScreen(
                     }
                 }
             }
+
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopStart)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.5f))
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
         }
     }
 }
@@ -315,7 +342,7 @@ fun BioItem(icon: Int, label: String, value: String) {
             painter = painterResource(id = icon),
             contentDescription = label,
             tint = Color(0xFFC5C7D7),
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(32.dp)
         )
 
         Spacer(modifier = Modifier.width(12.dp))
@@ -327,14 +354,16 @@ fun BioItem(icon: Int, label: String, value: String) {
                 text = label,
                 color = TextGray,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                lineHeight = 18.sp
             )
-            Spacer(modifier = Modifier.height(2.dp))
+
             Text(
                 text = value,
                 color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
+                lineHeight = 22.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -361,15 +390,16 @@ fun LocationItem(
                 painter = painterResource(id = icon),
                 contentDescription = null,
                 tint = RickGreen,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = label, color = TextGray, fontSize = 12.sp)
+            Text(text = label, color = TextGray, fontSize = 12.sp, lineHeight = 18.sp)
             Text(
                 text = value,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
+                lineHeight = 22.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

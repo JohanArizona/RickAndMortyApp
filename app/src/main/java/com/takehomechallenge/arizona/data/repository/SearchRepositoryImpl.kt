@@ -29,7 +29,6 @@ class SearchRepositoryImpl @Inject constructor(
     ): Flow<ResourceState<List<Character>>> = flow {
         emit(ResourceState.Loading)
         try {
-            // Panggil API dengan semua parameter filter
             val response = api.searchCharacters(name, status, species, type, gender, page)
             if (response.results.isEmpty()) {
                 emit(ResourceState.Empty)

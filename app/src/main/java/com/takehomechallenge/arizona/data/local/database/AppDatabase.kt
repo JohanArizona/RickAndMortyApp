@@ -25,5 +25,5 @@ import com.takehomechallenge.arizona.data.local.entity.SearchHistoryEntity
 abstract class AppDatabase : RoomDatabase() {
     abstract fun characterDao(): CharacterDao
     abstract fun favoriteDao(): FavoriteDao
-    abstract fun searchHistoryDao(): SearchHistoryDao // DAO Baru
+    abstract fun searchHistoryDao(): SearchHistoryDao
 }

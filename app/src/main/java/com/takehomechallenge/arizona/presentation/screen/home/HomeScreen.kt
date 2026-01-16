@@ -55,7 +55,6 @@ import com.takehomechallenge.arizona.presentation.component.common.CharacterCard
 import com.takehomechallenge.arizona.presentation.navigation.Screen
 import com.takehomechallenge.arizona.presentation.theme.BackgroundDark
 import com.takehomechallenge.arizona.presentation.theme.RickGreen
-import com.takehomechallenge.arizona.presentation.theme.TextGray
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

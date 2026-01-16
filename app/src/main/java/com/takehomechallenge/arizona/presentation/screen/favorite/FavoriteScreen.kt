@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,13 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.takehomechallenge.arizona.presentation.component.common.CharacterCard
 import com.takehomechallenge.arizona.presentation.navigation.Screen
 import com.takehomechallenge.arizona.presentation.theme.BackgroundDark
-import com.takehomechallenge.arizona.presentation.theme.RickGreen
 import com.takehomechallenge.arizona.presentation.theme.TextGray
 
 @Composable
