@@ -4,7 +4,7 @@
 
 A modern Android application built as a submission for the **BIGIO Mobile Developer Take Home Challenge**. This app leverages **Clean Architecture** principles and **MVVM** pattern to ensure scalability and testability. Built entirely with **Kotlin** and **Jetpack Compose**, it provides a seamless user experience for browsing, searching, and managing favorite characters from the Rick and Morty universe.
 
-The application features a fully immersive **Dark Mode** UI with advanced animations (Glassmorphism, Sticky Headers, Shared Elements) and robust offline capabilities using local caching.
+The application features a fully immersive **Dark Mode** UI and robust offline capabilities using local caching.
 
 
 ## Table of Contents
@@ -24,7 +24,7 @@ The application features a fully immersive **Dark Mode** UI with advanced animat
 
 - **Character List**: Infinite scrolling (pagination) grid view with a hero header.
 
-- **Character Detail**: Rich UI with sticky navigation bar with fade animation and horizontal scroll for episodes/recommendations.
+- **Character Detail**: Rich UI with sticky navigation bar with fade animation and horizontal scroll for episodes and recommendations.
 
 - **Advanced Search**:
 
@@ -72,6 +72,8 @@ The application features a fully immersive **Dark Mode** UI with advanced animat
 
 The project follows **Clean Architecture** to separate concerns:
 
+* `app` (Application Entry Point, Hilt Setup & MainActivity)
+  
 * `data`
 
     * `local` (Room DB, DAO, Entities)
@@ -80,6 +82,8 @@ The project follows **Clean Architecture** to separate concerns:
 
     * `repository` (Repository Implementation)
 
+* `di` (Dependency Injection Modules)
+  
 * `domain`
 
     * `model` (Data classes used in UI)
@@ -99,9 +103,6 @@ The project follows **Clean Architecture** to separate concerns:
     * `theme` (Color, Type, Theme definitions)
 
     * `navigation` (NavGraph and Screen Routes)
-
-* `di` (Dependency Injection Modules)
-
 
 
 ## <a name="apk-link"></a> APK Link :
