@@ -79,6 +79,8 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
 
+    implementation(libs.androidx.core.splashscreen)
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
