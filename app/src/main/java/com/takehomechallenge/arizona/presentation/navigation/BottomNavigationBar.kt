@@ -20,7 +20,10 @@ import com.takehomechallenge.arizona.presentation.theme.SurfaceDark
 import com.takehomechallenge.arizona.presentation.theme.TextGray
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(
+    navController: NavController,
+    onReselect: (Screen) -> Unit = {}
+) {
     val items = listOf(
         Screen.Home,
         Screen.Search,
@@ -48,7 +51,9 @@ fun BottomNavigationBar(navController: NavController) {
                 label = { Text(screen.route.replaceFirstChar { it.uppercase() }) },
                 selected = isSelected,
                 onClick = {
-                    if (currentRoute != screen.route) {
+                    if (isSelected) {
+                        onReselect(screen)
+                    } else {
                         navController.navigate(screen.route) {
                             popUpTo(Screen.Home.route) { saveState = true }
                             launchSingleTop = true

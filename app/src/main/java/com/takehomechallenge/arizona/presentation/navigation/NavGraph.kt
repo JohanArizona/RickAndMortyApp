@@ -1,5 +1,6 @@
 package com.takehomechallenge.arizona.presentation.navigation
 
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -15,7 +16,10 @@ import com.takehomechallenge.arizona.presentation.screen.search.SearchScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    homeListState: LazyGridState,
+    searchListState: LazyGridState,
+    favoriteListState: LazyGridState
 ) {
     NavHost(
         navController = navController,
@@ -23,11 +27,24 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(
+                navController = navController,
+                listState = homeListState
+            )
         }
 
         composable(Screen.Favorite.route) {
-            FavoriteScreen(navController = navController)
+            FavoriteScreen(
+                navController = navController,
+                listState = favoriteListState
+            )
+        }
+
+        composable(Screen.Search.route) {
+            SearchScreen(
+                navController = navController,
+                listState = searchListState
+            )
         }
 
         composable(
@@ -36,10 +53,6 @@ fun NavGraph(
         ) { backStackEntry ->
             val characterId = backStackEntry.arguments?.getInt("characterId") ?: 0
             DetailScreen(characterId = characterId, navController = navController)
-        }
-
-        composable(Screen.Search.route) {
-            SearchScreen(navController = navController)
         }
     }
 }
