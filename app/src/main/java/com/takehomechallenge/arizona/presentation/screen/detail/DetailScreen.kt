@@ -203,7 +203,7 @@ fun DetailScreen(
                                     )
                                     LocationItem(
                                         modifier = Modifier.weight(1f),
-                                        label = "Last Known",
+                                        label = "Last Known Location",
                                         value = character.locationName,
                                         icon = R.drawable.ic_last_location
                                     )

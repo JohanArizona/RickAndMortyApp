@@ -75,16 +75,16 @@ fun CharacterCard(
                     onClick = { onFavoriteClick(character) },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(32.dp)
+                        .padding(4.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.4f))
+                        .background(Color.Black.copy(alpha = 0.6f))
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (isFavorite) RickGreen else Color.White,
-                        modifier = Modifier.size(20.dp)
+                        tint = RickGreen,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
