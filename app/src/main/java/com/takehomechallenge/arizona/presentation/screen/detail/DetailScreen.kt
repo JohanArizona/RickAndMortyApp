@@ -1,5 +1,10 @@
 package com.takehomechallenge.arizona.presentation.screen.detail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +19,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,7 +41,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +76,25 @@ fun DetailScreen(
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val scrollState = rememberLazyListState()
+
+    val showStickyBar by remember {
+        derivedStateOf {
+            scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 600
+        }
+    }
+
+    val barColor by animateColorAsState(
+        targetValue = if (showStickyBar) BackgroundDark else Color.Transparent,
+        animationSpec = tween(300),
+        label = "BarColor"
+    )
+
+    val iconButtonBackground by animateColorAsState(
+        targetValue = if (showStickyBar) Color.Transparent else Color.Black.copy(alpha = 0.5f),
+        animationSpec = tween(300),
+        label = "IconBackground"
+    )
 
     LaunchedEffect(characterId) {
         viewModel.getCharacterDetail(characterId)
@@ -86,12 +114,15 @@ fun DetailScreen(
             val character = state.character!!
 
             LazyColumn(
+                state = scrollState,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
 
                 item {
-                    Box(modifier = Modifier.height(350.dp).fillMaxWidth()) {
+                    Box(modifier = Modifier
+                        .height(350.dp)
+                        .fillMaxWidth()) {
                         AsyncImage(
                             model = character.image,
                             contentDescription = null,
@@ -111,7 +142,6 @@ fun DetailScreen(
                         )
                     }
                 }
-
 
                 item {
                     Column(
@@ -279,15 +309,48 @@ fun DetailScreen(
                 }
             }
 
-            IconButton(
-                onClick = { navController.popBackStack() },
+            Box(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(barColor)
                     .align(Alignment.TopStart)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.5f))
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(iconButtonBackground)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = showStickyBar,
+                        enter = fadeIn(animationSpec = tween(300)),
+                        exit = fadeOut(animationSpec = tween(300))
+                    ) {
+                        Text(
+                            text = character.name,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 16.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
         }
     }
@@ -354,8 +417,7 @@ fun BioItem(icon: Int, label: String, value: String) {
                 text = label,
                 color = TextGray,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                lineHeight = 18.sp
+                fontWeight = FontWeight.Medium
             )
 
             Text(
@@ -363,7 +425,6 @@ fun BioItem(icon: Int, label: String, value: String) {
                 color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
-                lineHeight = 22.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -393,13 +454,12 @@ fun LocationItem(
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = label, color = TextGray, fontSize = 12.sp, lineHeight = 18.sp)
+            Text(text = label, color = TextGray, fontSize = 12.sp)
             Text(
                 text = value,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                lineHeight = 22.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
